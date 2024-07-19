@@ -1,7 +1,5 @@
 // HomeComponent.js
 import React, { useEffect, useState } from 'react';
-import NavigationMenu from '../NavigationMenu';
-import WelcomeBanner from './WelcomeBanner';
 import InformativeSection from './InformativeSection';
 import ReportList from './ReportList';
 import {
@@ -39,11 +37,8 @@ const HomeComponent = () => {
 
   return (
     <div className="home-page">
-      <NavigationMenu />
-      <WelcomeBanner />
       <InformativeSection title="About BringMeBack" content="BringMeBack is dedicated to reuniting lost loved ones and items with their rightful owners." />
-      <InformativeSection title="About Thullile Pty Ltd" content="Thullile Pty Ltd is a technology company focused on bridging the digital divide in South Africa." />
-      <div className="report-section">
+       <div className="report-section">
         <h2>Found Persons</h2>
         <ReportList reports={foundPersons} />
       </div>

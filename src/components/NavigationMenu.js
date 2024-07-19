@@ -10,13 +10,18 @@ const NavigationMenu = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link href="#reports">Reports</Nav.Link>
-          <Nav.Link href="#profile">Profile</Nav.Link>
-          <Nav.Link href="#help">Help</Nav.Link>
+          <Nav.Link href="/">Home</Nav.Link>
+          <Nav.Link href="/reports">Reports</Nav.Link>          
+           <Nav.Link href="/report/new">Create Report</Nav.Link>
+           <Nav.Link href="/users">User Manangement</Nav.Link>
+        </Nav>
+        <Nav>
+          <Nav.Link href="/login">Login</Nav.Link> {/* Add Link for Login */}
+          <Nav.Link href="/register">Register</Nav.Link> {/* Add Link for Register */}
         </Nav>
       </Navbar.Collapse>
     </Navbar>
+    
   );
 }
 

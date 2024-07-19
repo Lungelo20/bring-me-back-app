@@ -1,0 +1,18 @@
+.report-detail {
+  margin-top: 20px;
+}
+
+.report-detail-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.report-detail h2 {
+  margin-bottom: 20px;
+}
+
+.report-detail p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}

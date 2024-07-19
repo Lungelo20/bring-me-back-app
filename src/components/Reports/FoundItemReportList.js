@@ -19,7 +19,7 @@ const FoundItemReportList = ({ reports }) => {
         </thead>
         <tbody>
           {reports.map(report => (
-            <tr key={report.id}>
+            <tr key={report.reportId}>
               <td>{report.itemName}</td>
               <td>{report.itemDescription}</td>
               <td>{report.foundLocation}</td>
