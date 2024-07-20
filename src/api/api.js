@@ -1,5 +1,16 @@
 import axiosInstance from './axios';
 
+export const fetchData = async () => {
+    try {
+        const response = await axiosInstance.get('/reports');
+        console.log('Data:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+};
+
 // Get all users
 export const getAllUsers = async () => {
     try {
@@ -30,6 +41,7 @@ export const createUser = async (userData) => {
                 'Content-Type': 'application/json',
             },
         });
+        console.log('Registerd successfully!')
         return response.data;
     } catch (error) {
         console.error('Error creating user:', error);
@@ -37,16 +49,22 @@ export const createUser = async (userData) => {
     }
 };
 
-// Login user
+// Function to log in or generate token
 export const loginUser = async (credentials) => {
     try {
-      const response = await axiosInstance.post('/Users/login', JSON.stringify(credentials));
-      return response.data;
+        const response = await axiosInstance.post('/users/login', JSON.stringify(credentials));
+        const token = response.data.token; // Adjust based on your API response structure        
+        const  user  = response.data; // Adjust based on your API response structure    
+           
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('jwtToken', token); // Save token in local storage
+        console.log('Logged-in successfully!')
+        return response.data;
     } catch (error) {
-      console.error('Error logging in user:', error);
-      throw error;
+        console.error('Error logging in:', error);
+        throw error;
     }
-  };
+};
 
 // Update a user
 export const updateUser = async (id, userData) => {
@@ -84,16 +102,38 @@ export const getReports = async () => {
     return response.data;
   };
   
-  export const createReport = async (reportData) => {
+  // Function to create a new report
+export const createReport = async (reportData) => {
     try {
+   
+        // Send POST request to create the report
         const response = await axiosInstance.post('/reports', reportData);
+        
+        // Log the response for debugging purposes
         console.log('Report created:', response.data);
+        
+        // Return the response data
         return response.data;
     } catch (error) {
-        console.error('Error creating report:', error);
+        // Log the error response for debugging purposes
+        if (error.response) {
+            // Server responded with a status other than 2xx
+            console.error('Error creating report:', error.response.data);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+        } else if (error.request) {
+            // The request was made but no response received
+            console.error('No response received:', error.request);
+        } else {
+            // Something else went wrong in setting up the request
+            console.error('Error setting up request:', error.message);
+        }
+        
+        // Rethrow the error to be handled by the calling code
         throw error;
     }
 };
+
   
   export const updateReport = async (id, report) => {
     const response = await axiosInstance.put(`/reports/${id}`, report);
