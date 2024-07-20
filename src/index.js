@@ -5,13 +5,16 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import NavigationMenu from './components/NavigationMenu';
 import WelcomeBanner from './components/Home/WelcomeBanner';
+import { AuthProvider } from './contexts/AuthContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+     <AuthProvider>
       <NavigationMenu />
       <WelcomeBanner />
     <App />
+    </AuthProvider>
   </React.StrictMode>
 );
 
