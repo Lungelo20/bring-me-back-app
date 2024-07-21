@@ -24,8 +24,7 @@ const LoginComponent = () => {
             navigate('/'); // Redirect on successful login
         } catch (error) {
             // Display error message
-            setError('Login failed. Please check your credentials and try again.');
-       
+            setError('Login failed. Please check your credentials and try again.');       
             // Hide error message after 5 seconds
             setTimeout(() => setError(''), 2000);
         } finally {

@@ -46,13 +46,12 @@ const RegisterComponent = () => {
     }
 
     try {
-      
-      const newUser = await createUser(userData);
+            
       setSuccess('Registration successful!');
       // Delay before navigating
       setTimeout(() => {
         navigate('/login'); // Redirect to login page
-    }, 2000); // Delay in milliseconds (2 seconds in this example)
+    }, 1500); // Delay in milliseconds (2 seconds in this example)
     } catch (error) {
       console.error('Error creating user:', error);
       setError(error.response?.data || 'Error creating user.');

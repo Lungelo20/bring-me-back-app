@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import InformativeSection from './InformativeSection';
 import ReportList from './ReportList';
+import WelcomeBanner from '../Home/WelcomeBanner';
 import {
   fetchFoundPersonReports,
   fetchMissingItemReports,
@@ -37,6 +38,7 @@ const HomeComponent = () => {
 
   return (
     <div className="home-page">
+       <WelcomeBanner />
       <InformativeSection title="About BringMeBack" content="BringMeBack is dedicated to reuniting lost loved ones and items with their rightful owners." />
        <div className="report-section">
         <h2>Found Persons</h2>
