@@ -102,44 +102,125 @@ export const getReports = async () => {
     return response.data;
   };
   
-  // Function to create a new report
-export const createReport = async (reportData) => {
+ 
+  export const createMissingPersonReport = async (reportData) => {
     try {
-   
-        // Send POST request to create the report
-        const response = await axiosInstance.post('/reports', reportData);
-        
-        // Log the response for debugging purposes
-        console.log('Report created:', response.data);
-        
-        // Return the response data
+        // Ensure recentPhotos is an array
+        if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        }
+        const response = await axiosInstance.post('/reports/CreateMissingPersonReport', reportData);
+        console.log('Missing person report created:', response.data);
         return response.data;
     } catch (error) {
-        // Log the error response for debugging purposes
         if (error.response) {
-            // Server responded with a status other than 2xx
-            console.error('Error creating report:', error.response.data);
+            console.error('Error creating missing person report:', error.response.data);
             console.error('Status:', error.response.status);
             console.error('Headers:', error.response.headers);
         } else if (error.request) {
-            // The request was made but no response received
             console.error('No response received:', error.request);
         } else {
-            // Something else went wrong in setting up the request
             console.error('Error setting up request:', error.message);
         }
-        
-        // Rethrow the error to be handled by the calling code
         throw error;
     }
 };
 
-  
-  export const updateReport = async (id, report) => {
-    const response = await axiosInstance.put(`/reports/${id}`, report);
+export const createMissingItemReport = async (reportData) => {
+    try {
+         // Ensure recentPhotos is an array
+         if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        }
+        const response = await axiosInstance.post('/reports/CreateMissingItemReport', reportData);
+        console.log('Missing item report created:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating missing item report:', error.response.data);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error setting up request:', error.message);
+        }
+        throw error;
+    }
+};
+
+export const createFoundPersonReport = async (reportData) => {
+    try {
+         // Ensure recentPhotos is an array
+         if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        }
+        const response = await axiosInstance.post('/reports/CreateFoundPersonReport', reportData);
+        console.log('Found person report created:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating found person report:', error.response.data);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error setting up request:', error.message);
+        }
+        throw error;
+    }
+};
+
+export const createFoundItemReport = async (reportData) => {
+    try {
+         // Ensure recentPhotos is an array
+         if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        }
+        const response = await axiosInstance.post('/reports/CreateFoundItemReport', reportData);
+        console.log('Found item report created:', response.data);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            console.error('Error creating found item report:', error.response.data);
+            console.error('Status:', error.response.status);
+            console.error('Headers:', error.response.headers);
+        } else if (error.request) {
+            console.error('No response received:', error.request);
+        } else {
+            console.error('Error setting up request:', error.message);
+        }
+        throw error;
+    }
+};
+
+  ///           UPDATE REPORTS            ///
+  export const updateShortReport = async (id, report) => {
+    const response = await axiosInstance.put(`/reports/updatershortreport/${id}`, report);
+    return response.data;
+  };
+
+  export const updateMissingPersonReport = async (id, report) => {
+    const response = await axiosInstance.put(`/reports/updatemissingperson/${id}`, report);
     return response.data;
   };
   
+  export const updateMissingItemReport = async (id, report) => {
+    const response = await axiosInstance.put(`/reports/updatemissingitem/${id}`, report);
+    return response.data;
+  };
+  
+  export const updateFoundPersonReport = async (id, report) => {
+    const response = await axiosInstance.put(`/reports/updatefoundperson/${id}`, report);
+    return response.data;
+  };
+  
+  export const updateFoundItemReport = async (id, report) => {
+    const response = await axiosInstance.put(`/reports/updatefounditem/${id}`, report);
+    return response.data;
+  };
+    
   export const archiveReport = async (id) => {
     const response = await axiosInstance.delete(`/reports/${id}`);
     return response.data;
