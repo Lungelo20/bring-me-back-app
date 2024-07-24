@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createUser } from '../../api/api';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
