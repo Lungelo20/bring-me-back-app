@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { createMissingPersonReport } from '../../../api/api';
-import { createMissingItemReport } from '../../../api/api';
-import { createFoundPersonReport } from '../../../api/api';
-import { createFoundItemReport } from '../../../api/api';
+import { createMissingPersonReport, createFoundItemReport, compareFoundPersonReport,
+  createFoundPersonReport, createMissingItemReport, compareMissingItemReport,
+  uploadFiles, compareMissingPersonReport, updateMissingPersonReport, compareFoundItemReport,
+  updateMissingItemReport, updateFoundPersonReport, updateFoundItemReport } from '../../../api/api';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert, Modal } from 'react-bootstrap';
 
 // Define role mapping for conversion
 const roleMapping = {
@@ -40,6 +40,16 @@ const CreateReport = () => {
     comments: [],
   });
 
+  const [additionalInfo, setAdditionalInfo] = useState({});
+  const navigate = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertVariant, setAlertVariant] = useState('danger');
+  const [showModal, setShowModal] = useState(false);
+  const [existingReport, setExistingReport] = useState(null);
+  const [matchPercentage, setMatchPercentage] = useState(null);
+ 
+
     // Ensure this effect runs only once when the component mounts
     useEffect(() => {
       if (user) {
@@ -51,17 +61,10 @@ const CreateReport = () => {
           Email: user.email,
           PhoneNumber: user.phoneNumber,
           Location: user.location,
-          Role: userRole,
-          
+          Role: userRole,          
         }));
       }
     }, []); // Run only on mount
-
-    const [additionalInfo, setAdditionalInfo] = useState({});
-    const navigate = useNavigate();
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertVariant, setAlertVariant] = useState('danger');
 
     const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +74,7 @@ const CreateReport = () => {
     });
   };
 
+  
   const handleAdditionalInfoChange = (e) => {
     const { name, value } = e.target;
     setAdditionalInfo({
@@ -78,19 +82,96 @@ const CreateReport = () => {
       [name]: value,
     });
   };
-
+  
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setReport({
+        ...report,
+        recentPhotos: files,
+    });
+};
+    
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+    try {   
+
+      let fileUrls = [];
+
+      // Ensure recentPhotos exists and is an array
+      if (report.recentPhotos && Array.isArray(report.recentPhotos) && report.recentPhotos.length > 0) {
+          // Upload files and get the URLs
+          fileUrls = await uploadFiles(report.recentPhotos);
+      }
+
       const combinedReport = { ...report, ...additionalInfo,
         Name: user.name,
         Email: user.email,
         PhoneNumber: user.phoneNumber,
         Location: user.location,
-        Role: userRole
-        
+        Role: userRole,
+        RecentPhotos: fileUrls // Include the file URLs here       
        };
-         // Switch report types here and call the corresponding API method
+
+      // Check for existing matches
+      let comparisonResult ='';            
+      switch (combinedReport.reportType) {
+        case 'MissingPerson':
+          comparisonResult = await compareMissingPersonReport(combinedReport);
+          break;
+        case 'MissingItem':
+          comparisonResult = await compareMissingItemReport(combinedReport);
+          break;
+        case 'FoundPerson':
+          comparisonResult = await compareFoundPersonReport(combinedReport);
+          break;
+        case 'FoundItem':
+          comparisonResult = await compareFoundItemReport(combinedReport);
+          break;
+        default:
+          throw new Error('Invalid report type');
+      }
+      if (comparisonResult.match) {
+        // Show modal for user confirmation
+        setMatchPercentage(comparisonResult.matchPercentage);
+        setExistingReport(comparisonResult.matchedReport);
+        setShowModal(true);
+      } else {
+        // Create the report if no match is found
+        await createReport(combinedReport);
+        setAlertMessage('Report created successfully!');
+        setAlertVariant('success');
+        setShowAlert(true);
+        setTimeout(() => navigate('/reports'), 2000);
+      }
+    } catch (error) {
+      setAlertMessage('Error creating report. Please try again.');
+      setAlertVariant('danger');
+      setShowAlert(true);
+      console.error('Error creating report:', error);
+    }
+  };
+
+  const handleConfirmMatch = async () => {
+    try {
+      await updateReport(existingReport.id, report);
+      setAlertMessage('Report updated successfully!');
+      setAlertVariant('success');
+      setShowAlert(true);
+      setShowModal(false);
+      setTimeout(() => navigate('/reports'), 2000);
+    } catch (error) {
+      setAlertMessage('Error updating report. Please try again.');
+      setAlertVariant('danger');
+      setShowAlert(true);
+      console.error('Error updating report:', error);
+    }
+  };
+
+  const handleCancelMatch = () => {
+    setShowModal(false);
+  };
+
+  const createReport = async (combinedReport) => {
     switch (combinedReport.reportType) {
       case 'MissingPerson':
         await createMissingPersonReport(combinedReport);
@@ -107,16 +188,26 @@ const CreateReport = () => {
       default:
         throw new Error('Invalid report type');
     }
-      setAlertMessage('Report created successfully!');
-      setAlertVariant('success');
-      setShowAlert(true);
-      setTimeout(() => navigate('/reports'), 2000);
-    } catch (error) {
-      setAlertMessage('Error creating report. Please try again.');
-      setAlertVariant('danger');
-      setShowAlert(true);
-      console.error('Error creating report:', error);
+  };
+
+  const updateReport = async (id, report) => {
+    switch (existingReport.reportType) {
+      case 'MissingPerson':
+        await updateMissingPersonReport(id, report);
+        break;
+      case 'MissingItem':
+        await updateMissingItemReport(id, report);
+        break;
+      case 'FoundPerson':
+        await updateFoundPersonReport(id, report);
+        break;
+      case 'FoundItem':
+        await updateFoundItemReport(id, report);
+        break;
+      default:
+        throw new Error('Invalid report type');
     }
+  
   };
 
   const renderAdditionalFields = () => {
@@ -241,8 +332,17 @@ const CreateReport = () => {
             </Form.Group>
 
             <Form.Group controlId="recentPhotos">
-              <Form.Label>Recent Photos (URLs):</Form.Label>
-              <Form.Control type="text" name="recentPhotos" onChange={handleAdditionalInfoChange} />
+                <Form.Label>Recent Photos:</Form.Label>
+                <Form.Control 
+                    type="file" 
+                    name="recentPhotos" 
+                    onChange={handleFileChange} 
+                    multiple 
+                    accept="image/*"
+                />
+                <Form.Text className="text-muted">
+                    You can upload multiple images. Accepted formats: JPG, PNG, GIF.
+                </Form.Text>
             </Form.Group>
 
             <Form.Group controlId="briefDescriptionOfCircumstances">
@@ -311,8 +411,17 @@ const CreateReport = () => {
             </Form.Group>
         
             <Form.Group controlId="recentPhotos">
-              <Form.Label>Recent Photos (URLs):</Form.Label>
-              <Form.Control type="text" name="recentPhotos" onChange={handleAdditionalInfoChange} />
+                <Form.Label>Recent Photos:</Form.Label>
+                <Form.Control 
+                    type="file" 
+                    name="recentPhotos" 
+                    onChange={handleFileChange} 
+                    multiple 
+                    accept="image/*"
+                />
+                <Form.Text className="text-muted">
+                    You can upload multiple images. Accepted formats: JPG, PNG, GIF.
+                </Form.Text>
             </Form.Group>
         
             <Form.Group controlId="estimatedValue">
@@ -422,8 +531,17 @@ const CreateReport = () => {
             </Form.Group>
         
             <Form.Group controlId="recentPhotos">
-              <Form.Label>Recent Photos (URLs):</Form.Label>
-              <Form.Control type="text" name="recentPhotos" onChange={handleAdditionalInfoChange} />
+                <Form.Label>Recent Photos:</Form.Label>
+                <Form.Control 
+                    type="file" 
+                    name="recentPhotos" 
+                    onChange={handleFileChange} 
+                    multiple 
+                    accept="image/*"
+                />
+                <Form.Text className="text-muted">
+                    You can upload multiple images. Accepted formats: JPG, PNG, GIF.
+                </Form.Text>
             </Form.Group>
         
             <Form.Group controlId="videoUrl">
@@ -487,8 +605,17 @@ const CreateReport = () => {
             </Form.Group>
         
             <Form.Group controlId="recentPhotos">
-              <Form.Label>Recent Photos (URLs):</Form.Label>
-              <Form.Control type="text" name="recentPhotos" onChange={handleAdditionalInfoChange} />
+                <Form.Label>Recent Photos:</Form.Label>
+                <Form.Control 
+                    type="file" 
+                    name="recentPhotos" 
+                    onChange={handleFileChange} 
+                    multiple 
+                    accept="image/*"
+                />
+                <Form.Text className="text-muted">
+                    You can upload multiple images. Accepted formats: JPG, PNG, GIF.
+                </Form.Text>
             </Form.Group>
         
             <Form.Group controlId="circumstancesOfFinding">
@@ -512,7 +639,9 @@ const CreateReport = () => {
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
           <h2>Create a New Report</h2>
-          {showAlert && <Alert variant={alertVariant}>{alertMessage}</Alert>}
+          {showAlert && <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>
+          {alertMessage}
+        </Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="reportType">
               <Form.Label>Report Type</Form.Label>
@@ -540,6 +669,32 @@ const CreateReport = () => {
           </Form>
         </Col>
       </Row>
+      {/* Modal for confirmation */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Report Update</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>An existing report was found that matches the one you are trying to create.</p>
+          <p>Match Percentage: {matchPercentage}%</p>
+          <div className="mt-3">
+            <h5>Existing Report Details:</h5>
+            <p><strong>Report Type:</strong> {existingReport?.reportType}</p>
+            <p><strong>Full Name:</strong> {existingReport?.fullName}</p>
+            <p><strong>Description:</strong> {existingReport?.description}</p>
+            <p><strong>Last Seen Date/Time:</strong> {existingReport?.lastSeenDateTime}</p>
+          </div>
+          <p>Do you want to update the existing report with the new data?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelMatch}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleConfirmMatch}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

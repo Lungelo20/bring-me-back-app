@@ -1,7 +1,100 @@
-/* InformativeSection.css */
 .informative-section {
-    padding: 20px;
-    background-color: #e9ecef;
-    margin: 20px 0;
-  }
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.informative-section .cta-button {
+  font-size: 1.25rem;
+  padding: 10px 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}
+
+.informative-section.image-left,
+.informative-section.image-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   
+}
+
+#root > div > div.informative-section.image-left > div {
+  flex-direction: row;
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  padding: 20px;
+  align-items: center;
+  margin: auto;
+width: 100%;
+}
+
+.informative-section.image-left .image,
+.informative-section.image-right .image {
+  flex: 1;
+  margin: 10px;
+}
+
+.informative-section.image-left .text,
+.informative-section.image-right .text {
+  flex: 2;
+}
+
+.informative-section.image-left img,
+.informative-section.image-right img {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px; /* Limit the height of images */
+  border-radius: 5px;
+  object-fit: cover; /* Ensure the image fits well within the box */
+  
+}
+
+ #root > div > div.informative-section.image-right > div {
+  flex-direction: row-reverse;
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  padding: 20px;
+ 
+  align-items: center;
+  margin: auto;
+  width: 100%;
+}
+
+.informative-section.full-width {
+  text-align: center;
+
+}
+
+.informative-section.full-width .cta-button {
+  font-size: 1.25rem;
+  padding: 10px 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}
+.informative-section.full-width .cta-button:hover {
+  background-color: #0056b3;
+}
+
+.informative-section.support-us,
+.informative-section.join-us {
+  text-align: center;
+  padding: 40px;
+}
+
+.informative-section.support-us {
+
+}
+
+.informative-section.join-us {
+ 
+}
+
+.informative-section.support-us .cta-button,
+.informative-section.join-us .cta-button {
+  font-size: 1.25rem;
+  padding: 10px 20px;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+}

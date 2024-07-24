@@ -52,17 +52,30 @@ export const createUser = async (userData) => {
 // Function to log in or generate token
 export const loginUser = async (credentials) => {
     try {
-        const response = await axiosInstance.post('/users/login', JSON.stringify(credentials));
-        const token = response.data.token; // Adjust based on your API response structure        
-        const  user  = response.data; // Adjust based on your API response structure    
-           
+        // Send login request to the server
+        const response = await axiosInstance.post('/users/login', credentials);
+
+        // Adjust based on your API response structure
+        const { token, ...user } = response.data;
+
+        // Store user and token in local storage
         localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('jwtToken', token); // Save token in local storage
-        console.log('Logged-in successfully!')
+        localStorage.setItem('jwtToken', token);
+
+        console.log('Logged in successfully!');
         return response.data;
     } catch (error) {
-        console.error('Error logging in:', error);
-        throw error;
+        // Log the error for debugging
+        console.error('Error logging in:', error.response ? error.response.data : error.message);
+
+        // Optional: Add more specific error handling based on status codes
+        if (error.response && error.response.status === 401) {
+            throw new Error('Invalid credentials. Please try again.');
+        } else if (error.response && error.response.status === 500) {
+            throw new Error('Server error. Please try again later.');
+        } else {
+            throw new Error('An unexpected error occurred.');
+        }
     }
 };
 
@@ -105,9 +118,12 @@ export const getReports = async () => {
  
   export const createMissingPersonReport = async (reportData) => {
     try {
-        // Ensure recentPhotos is an array
+        // Ensure recentPhotos is an array of strings
         if (!Array.isArray(reportData.recentPhotos)) {
             reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
         }
         const response = await axiosInstance.post('/reports/CreateMissingPersonReport', reportData);
         console.log('Missing person report created:', response.data);
@@ -128,9 +144,12 @@ export const getReports = async () => {
 
 export const createMissingItemReport = async (reportData) => {
     try {
-         // Ensure recentPhotos is an array
-         if (!Array.isArray(reportData.recentPhotos)) {
+          // Ensure recentPhotos is an array of strings
+        if (!Array.isArray(reportData.recentPhotos)) {
             reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
         }
         const response = await axiosInstance.post('/reports/CreateMissingItemReport', reportData);
         console.log('Missing item report created:', response.data);
@@ -151,9 +170,12 @@ export const createMissingItemReport = async (reportData) => {
 
 export const createFoundPersonReport = async (reportData) => {
     try {
-         // Ensure recentPhotos is an array
+         // Ensure recentPhotos is an array of strings
          if (!Array.isArray(reportData.recentPhotos)) {
             reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
         }
         const response = await axiosInstance.post('/reports/CreateFoundPersonReport', reportData);
         console.log('Found person report created:', response.data);
@@ -174,9 +196,12 @@ export const createFoundPersonReport = async (reportData) => {
 
 export const createFoundItemReport = async (reportData) => {
     try {
-         // Ensure recentPhotos is an array
+         // Ensure recentPhotos is an array of strings
          if (!Array.isArray(reportData.recentPhotos)) {
             reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
         }
         const response = await axiosInstance.post('/reports/CreateFoundItemReport', reportData);
         console.log('Found item report created:', response.data);
@@ -195,6 +220,78 @@ export const createFoundItemReport = async (reportData) => {
     }
 };
 
+// API method for comparing missing person reports
+export const compareMissingPersonReport = async (reportData) => {
+    try {
+          // Ensure recentPhotos is an array of strings
+          if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
+        }
+        const response = await axiosInstance.post('/reports/compare-missing-person-report', reportData);
+        return response.data;
+    } catch (error) {
+        console.error('Error comparing missing person report:', error);
+        throw error;
+    }
+};
+
+// API method for comparing found person reports
+export const compareFoundPersonReport = async (reportData) => {
+    try {
+          // Ensure recentPhotos is an array of strings
+          if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
+        }
+        const response = await axiosInstance.post('/reports/compare-found-person-report', reportData);
+        return response.data;
+    } catch (error) {
+        console.error('Error comparing found person report:', error);
+        throw error;
+    }
+};
+
+// API method for comparing missing item reports
+export const compareMissingItemReport = async (reportData) => {
+    try {
+          // Ensure recentPhotos is an array of strings
+          if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
+        }
+        const response = await axiosInstance.post('/reports/compare-missing-item-report', reportData);
+        return response.data;
+    } catch (error) {
+        console.error('Error comparing person report:', error);
+        throw error;
+    }
+};
+
+// API method for comparing person reports
+export const compareFoundItemReport = async (reportData) => {
+    try {
+          // Ensure recentPhotos is an array of strings
+          if (!Array.isArray(reportData.recentPhotos)) {
+            reportData.recentPhotos = [];
+        } else {
+            // Ensure all items in recentPhotos are strings
+            reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
+        }
+        const response = await axiosInstance.post('/reports/compare-found-item-report', reportData);
+        return response.data;
+    } catch (error) {
+        console.error('Error comparing found item report:', error);
+        throw error;
+    }
+};
+
   ///           UPDATE REPORTS            ///
   export const updateShortReport = async (id, report) => {
     const response = await axiosInstance.put(`/reports/updatershortreport/${id}`, report);
@@ -202,21 +299,49 @@ export const createFoundItemReport = async (reportData) => {
   };
 
   export const updateMissingPersonReport = async (id, report) => {
+     // Ensure recentPhotos is an array of strings
+     if (!Array.isArray(report.recentPhotos)) {
+        report.recentPhotos = [];
+    } else {
+        // Ensure all items in recentPhotos are strings
+        report.recentPhotos = report.recentPhotos.map(photo => String(photo));
+    }
     const response = await axiosInstance.put(`/reports/updatemissingperson/${id}`, report);
     return response.data;
   };
   
   export const updateMissingItemReport = async (id, report) => {
+     // Ensure recentPhotos is an array of strings
+     if (!Array.isArray(report.recentPhotos)) {
+        report.recentPhotos = [];
+    } else {
+        // Ensure all items in recentPhotos are strings
+        report.recentPhotos = report.recentPhotos.map(photo => String(photo));
+    }
     const response = await axiosInstance.put(`/reports/updatemissingitem/${id}`, report);
     return response.data;
   };
   
   export const updateFoundPersonReport = async (id, report) => {
+     // Ensure recentPhotos is an array of strings
+     if (!Array.isArray(report.recentPhotos)) {
+        report.recentPhotos = [];
+    } else {
+        // Ensure all items in recentPhotos are strings
+        report.recentPhotos = report.recentPhotos.map(photo => String(photo));
+    }
     const response = await axiosInstance.put(`/reports/updatefoundperson/${id}`, report);
     return response.data;
   };
   
   export const updateFoundItemReport = async (id, report) => {
+     // Ensure recentPhotos is an array of strings
+     if (!Array.isArray(report.recentPhotos)) {
+        report.recentPhotos = [];
+    } else {
+        // Ensure all items in recentPhotos are strings
+        report.recentPhotos = report.recentPhotos.map(photo => String(photo));
+    }
     const response = await axiosInstance.put(`/reports/updatefounditem/${id}`, report);
     return response.data;
   };
@@ -311,6 +436,28 @@ export const filterFoundItemReports = async (filterParams) => {
         return response.data;
     } catch (error) {
         console.error('Error filtering found item reports:', error);
+        throw error;
+    }
+};
+
+export const uploadFiles = async (files) => {
+    const formData = new FormData();
+    files.forEach(file => {
+        formData.append('files', file);
+    });
+
+    try {
+        const response = await axiosInstance.post('/FileUpload/fileupload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        // Ensure the correct path to file URLs in the response
+        const fileUrls = response.data.fileUrls?.$values || [];
+        return fileUrls;
+    } catch (error) {
+        console.error('Error uploading files:', error);
         throw error;
     }
 };

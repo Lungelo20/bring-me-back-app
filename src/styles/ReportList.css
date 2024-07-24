@@ -1,10 +1,16 @@
-/* ReportList.css */
-.report-list .report-image {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
+.report-list .report-slide {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
 }
 
-.report-list tbody tr:hover {
-  background-color: #f1f1f1;
+.report-list .card {
+  margin: 0 auto;
+}
+
+.report-list .card-img-top {
+  max-width: 100%;
+}
+.slick-track {
+  overflow: hidden;
 }

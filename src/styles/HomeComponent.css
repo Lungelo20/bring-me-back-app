@@ -4,6 +4,20 @@
   }
   
   .report-section {
-    margin-bottom: 40px;
+    display: block;
+    position: relative;
+    margin: auto;
+    background-color: #e9ecef; /* Light gray background */
+    padding-bottom: 50px;
   }
   
+  .report-section-header {
+    display: block;
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    padding: 40px;
+    font-size: 50px;
+    text-transform: uppercase;
+    color: #fff;;
+  }

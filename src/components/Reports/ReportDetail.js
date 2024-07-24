@@ -1,10 +1,9 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import '../../styles/ReportDetail.css';
 
 const ReportDetail = ({ report }) => {
-  
+
   if (!report) {
     return <div>Report not found</div>;
   }
@@ -33,6 +32,9 @@ const ReportDetail = ({ report }) => {
     videoUrl                // New field
   } = report;
 
+  // Get the base URL from environment variables
+  const ImageURL = "http://localhost:5157/";
+
   return (
     <Container className="report-detail my-4">
       <Row>
@@ -40,7 +42,9 @@ const ReportDetail = ({ report }) => {
           <Card style={{ width: '18rem' }}>
             <Card.Img 
               variant="top" 
-              src={recentPhotos ? recentPhotos : 'https://placehold.co/600x400.png'} 
+              src={recentPhotos && recentPhotos.$values
+                ? `${ImageURL}${recentPhotos.$values}`
+                : "https://placehold.co/600x400.png"} 
               alt={fullName} 
               className="report-image"
             />
@@ -60,28 +64,20 @@ const ReportDetail = ({ report }) => {
         </Col>
         <Col md={8}>
           <Row>
-            <Col md={6}>
+            <Col md={12}>
               <Card>
                 <Card.Body>
                   <Card.Title>Description</Card.Title>
-                  <Card.Text>{description}</Card.Text>
+                  <Card.Text>{description || 'Description not available'}</Card.Text>
                   <ListGroup variant="flush">
-                    <ListGroup.Item><strong>Gender:</strong> {gender}</ListGroup.Item>
+                    <ListGroup.Item><strong>Gender:</strong> {gender || 'Gender not specified'}</ListGroup.Item>
                     <ListGroup.Item><strong>Date of Birth:</strong> {dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : 'Date of Birth not specified'}</ListGroup.Item>
-                    <ListGroup.Item>
-                      <strong>Contact:</strong> {primaryContactPerson || 'Contact not specified'}
-                      <br />
-                      {contactPhoneNumber && <span>Phone: {contactPhoneNumber}</span>}
-                      <br />
-                      {contactEmailAddress && <span>Email: {contactEmailAddress}</span>}
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <strong>Social Media:</strong> {socialMediaAccounts || 'No social media accounts specified'}
-                    </ListGroup.Item>
                   </ListGroup>
                 </Card.Body>
               </Card>
             </Col>
+          </Row>
+          <Row className="mt-3">
             <Col md={6}>
               <Card>
                 <Card.Body>
@@ -91,6 +87,25 @@ const ReportDetail = ({ report }) => {
                     <ListGroup.Item><strong>Reward Offered:</strong> {rewardOffered ? `$${rewardOffered}` : 'No reward offered'}</ListGroup.Item>
                     <ListGroup.Item>
                       <strong>Video:</strong> {videoUrl ? <a href={videoUrl} target="_blank" rel="noopener noreferrer">Watch Video</a> : 'No video available'}
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
+              <Card>
+                <Card.Body>
+                  <Card.Title>Contact Information</Card.Title>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <strong>Contact:</strong> {primaryContactPerson || 'Contact not specified'}
+                      <br />
+                      {contactPhoneNumber && <span>Phone: {contactPhoneNumber}</span>}
+                      <br />
+                      {contactEmailAddress && <span>Email: {contactEmailAddress}</span>}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Social Media:</strong> {socialMediaAccounts || 'No social media accounts specified'}
                     </ListGroup.Item>
                   </ListGroup>
                 </Card.Body>

@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('jwtToken'); // Remove token from local storage
         setUser(null);
         setIsAuthenticated(false);
+        window.location.href = '/login'; // Redirect to login or handle as needed
     };
 
     return (
