@@ -1,0 +1,15 @@
+/* src/styles/Comment.css */
+.comments-section {
+    margin-top: 20px;
+}
+
+.comment {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.comment p {
+    margin: 0;
+}

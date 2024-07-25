@@ -351,6 +351,181 @@ export const compareFoundItemReport = async (reportData) => {
     return response.data;
   };
 
+// Fetch comments for a report
+export const fetchComments = async (reportId) => {
+    try {
+        const response = await axiosInstance.get(`reports/${reportId}/comments`);
+        // Check if the response data is empty
+        if (response.data && Array.isArray(response.data.$values)) {
+            return response.data.$values;
+        } else {
+            // Return an empty array if no comments are found
+            return [];
+        }
+    } catch (error) {
+        // Log the error
+        console.error('Error fetching comments:', error);
+        // Return an empty array or handle as needed
+        return [];
+    }
+};
+  
+// Add a new comment to a report
+export const addComment = async (reportId, commentText) => {
+    try {
+        // Retrieve user details from local storage
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            throw new Error('User not authenticated');
+        }
+
+        const user = JSON.parse(userString);
+
+        // Prepare the payload with all required fields
+        const comment = {
+            userId: user.id, // User ID from local storage
+            userName: user.name, // User Name from local storage
+            userEmail: user.email, // User Email from local storage
+            content: commentText, // Comment content
+            reportId: reportId // ReportId
+        };
+        
+        // Post request to add a new comment
+        const response = await axiosInstance.post(`/reports/add/${reportId}/comments`, comment);
+
+        // Handle successful creation
+        if (response.status === 201) {
+            return response.data;
+        } else {
+            throw new Error('Failed to add comment');
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        throw error;
+    }
+};
+
+export const getParentCommentsByReportId = async (reportId) => {
+    try {
+      const response = await axiosInstance.get(`/reports/get/${reportId}/parent-comments`);
+       // Check if the response data is empty
+       if (response.data && Array.isArray(response.data.$values)) {
+        return response.data.$values;
+    } else {
+        // Return an empty array if no comments are found
+        return [];
+    }     
+    } catch (error) {
+      console.error('Error fetching parent comments', error);
+      throw error;
+    }
+  };
+  
+  export const addParentComment = async (reportId, commentText) => {
+    try {
+
+          // Retrieve user details from local storage
+          const userString = localStorage.getItem('user');
+          if (!userString) {
+              throw new Error('User not authenticated');
+          }
+  
+          const user = JSON.parse(userString);
+  
+          // Prepare the payload with all required fields
+          const commentString = {
+              userId: user.id, // User ID from local storage
+              userName: user.name, // User Name from local storage
+              userEmail: user.email, // User Email from local storage
+              content: commentText, // Comment content
+              reportId: reportId // ReportId
+          };
+      const response = await axiosInstance.post(`/reports/${reportId}/add/parent-comments`, commentString);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding parent comment', error);
+      throw error;
+    }
+  };
+  
+  export const getParentCommentById = async (commentId) => {
+    try {
+      const response = await axiosInstance.get(`/reports/get/parent-comments/${commentId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching parent comment', error);
+      throw error;
+    }
+  };
+  
+  export const deleteParentComment = async (commentId) => {
+    try {
+      await axiosInstance.delete(`/reports/delete/parent-comments/${commentId}`);
+    } catch (error) {
+      console.error('Error deleting parent comment', error);
+      throw error;
+    }
+  };
+  
+  export const getRepliesByParentCommentId = async (parentCommentId) => {
+    try {
+      const response = await axiosInstance.get(`/reports/parent-comments/get/${parentCommentId}/replies`);
+      return response.data.$values;
+    } catch (error) {
+      console.error('Error fetching replies', error);
+      throw error;
+    }
+  };
+  
+ export const addReplyComment = async (reportId, parentCommentId, replyText) => {
+    try {
+        // Retrieve user details from local storage
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            throw new Error('User not authenticated');
+        }
+
+        const user = JSON.parse(userString);
+
+        // Prepare the payload with all required fields
+        const replyPayload = {
+            userId: user.id, // User ID from local storage
+            userName: user.name, // User Name from local storage
+            userEmail: user.email, // User Email from local storage
+            content: replyText, // Reply content
+            parentCommentId: parentCommentId, // Parent Comment ID
+            reportId: reportId // ReportId
+        };
+
+        const response = await axiosInstance.post(`/reports/parent-comments/${parentCommentId}/add/replies`, replyPayload);
+        return response.data;
+    } catch (error) {
+        console.error('Error adding reply comment', error);
+        throw error;
+    }
+};
+
+  
+  export const getReplyCommentById = async (commentId) => {
+    try {
+      const response = await axiosInstance.get(`/reports/get/replies/${commentId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching reply comment', error);
+      throw error;
+    }
+  };
+  
+  export const deleteReplyComment = async (commentId) => {
+    try {
+        const response = await axiosInstance.delete(`/reports/delete/replies/${commentId}`);
+        return response.data;
+    } catch (error) {
+      console.error('Error deleting reply comment', error);
+      throw error;
+    }
+  };
+  
 // Fetch Missing Pereson Reports
 export const fetchMissingPersonReports = async () => {
     try {

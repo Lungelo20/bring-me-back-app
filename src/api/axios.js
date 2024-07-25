@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as JWT from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 
 // Create Axios instance
@@ -14,10 +14,12 @@ const axiosInstance = axios.create({
 const isTokenExpired = (token) => {
     if (!token) return true;
     try {
-        const decodedToken = JWT(token);
+        const decodedToken = jwtDecode(token);
         const currentTime = Date.now() / 1000; // Current time in seconds
         return decodedToken.exp < currentTime;
+
     } catch (error) {
+        console.log('Decoder Error:', error);
         return true; // If token decoding fails, consider it expired
     }
 };
@@ -28,6 +30,8 @@ axiosInstance.interceptors.request.use(
         if (token && !isTokenExpired(token)) {
             config.headers['Authorization'] = `Bearer ${token}`;
         } else {
+             // Token has expired
+            console.log('Token has expired');
              // Do not immediately remove token or redirect here
             // Allow the login request to proceed and handle it separately
         }
