@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, ListGroup } from 'react-bootstrap';
-import { fetchComments, addComment } from '../../../api/api'; // Ensure these API methods are correctly implemented
+import { Form, Button, ListGroup, Card } from 'react-bootstrap';
+import {
+    getParentCommentsByReportId,
+    addParentComment,
+    getRepliesByParentCommentId,
+    addReplyComment,
+} from '../../../api/api'; // Ensure these API methods are correctly implemented
 
 const CommentSection = ({ reportId }) => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+    const [newReply, setNewReply] = useState({});
+    const [showReplyForm, setShowReplyForm] = useState({});
 
     useEffect(() => {
-        // Fetch comments for the report
         const loadComments = async () => {
             try {
-                const data = await fetchComments(reportId);
-                setComments(data);
+                const data = await getParentCommentsByReportId(reportId);
+                const commentsWithReplies = await Promise.all(
+                    data.map(async (comment) => {
+                        const replies = await getRepliesByParentCommentId(comment.commentId);
+                        return { ...comment, replies };
+                    })
+                );
+                setComments(commentsWithReplies);
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
@@ -26,12 +38,30 @@ const CommentSection = ({ reportId }) => {
         if (!newComment.trim()) return;
 
         try {
-            // Add the new comment
-            const comment = await addComment(reportId, newComment);
-            setComments([...comments, comment]);
+            const comment = await addParentComment(reportId, newComment);
+            setComments([...comments, { ...comment, replies: [] }]);
             setNewComment('');
         } catch (error) {
             console.error('Error adding comment:', error);
+        }
+    };
+
+    const handleReplySubmit = async (parentCommentId, e) => {
+        e.preventDefault();
+    
+        if (!newReply[parentCommentId]?.trim()) return;
+    
+        try {
+            const reply = await addReplyComment(reportId, parentCommentId, newReply[parentCommentId]);
+            setComments(comments.map(comment =>
+                comment.commentId === parentCommentId
+                    ? { ...comment, replies: [...comment.replies, reply] }
+                    : comment
+            ));
+            setNewReply({ ...newReply, [parentCommentId]: '' });
+            setShowReplyForm({ ...showReplyForm, [parentCommentId]: false });
+        } catch (error) {
+            console.error('Error adding reply:', error);
         }
     };
 
@@ -42,7 +72,58 @@ const CommentSection = ({ reportId }) => {
                 {comments.length > 0 ? (
                     comments.map((comment) => (
                         <ListGroup.Item key={comment.commentId}>
-                            <strong>{comment.userName || 'Unknown Author'}</strong>: {comment.content}
+                            <Card>
+                                <Card.Body>
+                                    <Card.Title>{comment.userName || 'Unknown Author'}</Card.Title>
+                                    <Card.Text>{comment.content}</Card.Text>
+                                    <Button
+                                        variant="link"
+                                        onClick={() =>
+                                            setShowReplyForm({
+                                                ...showReplyForm,
+                                                [comment.commentId]: !showReplyForm[comment.commentId],
+                                            })
+                                        }
+                                    >
+                                        Reply
+                                    </Button>
+                                    {showReplyForm[comment.commentId] && (
+                                        <Form onSubmit={(e) => handleReplySubmit(comment.commentId, e)} className="mt-3">
+                                            <Form.Group controlId={`replyText-${comment.commentId}`}>
+                                                <Form.Control
+                                                    as="textarea"
+                                                    rows={2}
+                                                    value={newReply[comment.commentId] || ''}
+                                                    onChange={(e) =>
+                                                        setNewReply({
+                                                            ...newReply,
+                                                            [comment.commentId]: e.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Write your reply here..."
+                                                />
+                                            </Form.Group>
+                                            <Button variant="primary" type="submit">
+                                                Submit
+                                            </Button>
+                                        </Form>
+                                    )}
+                                    {comment.replies.length > 0 && (
+                                        <ListGroup className="mt-3">
+                                            {comment.replies.map((reply) => (
+                                                <ListGroup.Item key={reply.commentId}>
+                                                    <Card>
+                                                        <Card.Body>
+                                                            <Card.Title>{reply.userName || 'Unknown Author'}</Card.Title>
+                                                            <Card.Text>{reply.content}</Card.Text>
+                                                        </Card.Body>
+                                                    </Card>
+                                                </ListGroup.Item>
+                                            ))}
+                                        </ListGroup>
+                                    )}
+                                </Card.Body>
+                            </Card>
                         </ListGroup.Item>
                     ))
                 ) : (
