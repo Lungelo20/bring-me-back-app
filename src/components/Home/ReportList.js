@@ -1,4 +1,3 @@
-import React from 'react';
 import Slider from 'react-slick';
 import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -19,6 +18,7 @@ const settings = {
 };
 
 const ReportList = ({ reports }) => {
+
   const reportsArray = reports && reports.$values && Array.isArray(reports.$values)
     ? reports.$values
     : [];
@@ -73,7 +73,9 @@ const ReportList = ({ reports }) => {
             <div className="card" style={{ width: '18rem' }}>
               <img
                 className="card-img-top"
-                src={report.recentPhotos || "https://placehold.co/600x400.png"}
+                src={report.recentPhotos && report.recentPhotos.$values
+                  ? `${ImageURL}${report.recentPhotos.$values}`
+                  : "https://placehold.co/600x400.png"}
                 alt={report.fullName || report.itemName || 'Image'}
               />
               <div className="card-body">

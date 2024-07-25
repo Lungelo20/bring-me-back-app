@@ -351,6 +351,61 @@ export const compareFoundItemReport = async (reportData) => {
     return response.data;
   };
 
+// Fetch comments for a report
+export const fetchComments = async (reportId) => {
+    try {
+        const response = await axiosInstance.get(`reports/${reportId}/comments`);
+        // Check if the response data is empty
+        if (response.data && Array.isArray(response.data.$values)) {
+            return response.data.$values;
+        } else {
+            // Return an empty array if no comments are found
+            return [];
+        }
+    } catch (error) {
+        // Log the error
+        console.error('Error fetching comments:', error);
+        // Return an empty array or handle as needed
+        return [];
+    }
+};
+  
+// Add a new comment to a report
+export const addComment = async (reportId, commentText) => {
+    try {
+        // Retrieve user details from local storage
+        const userString = localStorage.getItem('user');
+        if (!userString) {
+            throw new Error('User not authenticated');
+        }
+
+        const user = JSON.parse(userString);
+
+        // Prepare the payload with all required fields
+        const comment = {
+            userId: user.id, // User ID from local storage
+            userName: user.name, // User Name from local storage
+            userEmail: user.email, // User Email from local storage
+            content: commentText, // Comment content
+            reportId: reportId // ReportId
+        };
+        
+        // Post request to add a new comment
+        const response = await axiosInstance.post(`/reports/add/${reportId}/comments`, comment);
+
+        // Handle successful creation
+        if (response.status === 201) {
+            return response.data;
+        } else {
+            throw new Error('Failed to add comment');
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        throw error;
+    }
+};
+
+  
 // Fetch Missing Pereson Reports
 export const fetchMissingPersonReports = async () => {
     try {
