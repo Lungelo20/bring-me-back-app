@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import HomeComponent from './components/Home/HomeComponent';
+import HomePage from './pages/HomePage';
 import ReportDetailsPage from './pages/ReportDetailsPage';
 import CreateReport from './components/Reports/CRUD/CreateReport'; 
 import UpdateReport from './components/Reports/CRUD/UpdateReport';
@@ -19,7 +19,7 @@ const App = () => {
        
         <Router>
             <Routes>
-                <Route path="/" element={<HomeComponent />} />                
+                <Route path="/" element={<HomePage />} />                
                 <Route path="/login" element={<LoginComponent />} />
                 <Route path="/register" element={<RegisterComponent />} />
                 

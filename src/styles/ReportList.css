@@ -1,16 +1,50 @@
-.report-list .report-slide {
-  padding: 10px;
+.report-list {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
-.report-list .card {
-  margin: 0 auto;
+.report-card {
+  width: 100%;
+  max-width: 800px;
 }
 
-.report-list .card-img-top {
-  max-width: 100%;
+.badge-info {
+  color: red;
 }
-.slick-track {
-  overflow: hidden;
+
+.pdr-2  {
+  margin-right: 20px;  
+}
+
+.card-img {
+  max-height: 600px;
+  object-fit: cover;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.report-details {
+  flex: 1;
+}
+
+.report-name {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-body > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-body .d-flex {
+  margin-top: auto;
 }

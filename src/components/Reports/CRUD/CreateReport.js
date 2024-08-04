@@ -109,7 +109,11 @@ const CreateReport = () => {
         PhoneNumber: user.phoneNumber,
         Location: user.location,
         Role: userRole,
-        RecentPhotos: fileUrls // Include the file URLs here       
+        RecentPhotos: fileUrls, // Include the file URLs here   
+        // Set default values for required fields
+        ResolvedBy: '', // Default to an empty string or set a default value
+        Attachments: [], // Default to an empty list
+        ResolutionNotes: '' // Default to an empty string or set a default value    
        };
 
       // Check for existing matches

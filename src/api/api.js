@@ -125,6 +125,15 @@ export const getReports = async () => {
             // Ensure all items in recentPhotos are strings
             reportData.recentPhotos = reportData.recentPhotos.map(photo => String(photo));
         }
+
+        // Ensure attachments is an array of strings
+        if (!Array.isArray(reportData.attachments)) {
+            reportData.attachments = [];
+        } else {
+            // Ensure all items in attachments are strings
+            reportData.attachments = reportData.attachments.map(attachment => String(attachment));
+        }
+        
         const response = await axiosInstance.post('/reports/CreateMissingPersonReport', reportData);
         console.log('Missing person report created:', response.data);
         return response.data;
