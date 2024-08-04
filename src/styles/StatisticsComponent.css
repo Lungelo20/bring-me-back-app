@@ -1,0 +1,56 @@
+.statistics-component {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light background for the entire statistics section */
+}
+
+.stat-card {
+  margin-bottom: 20px;
+  padding: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.stat-card .card-body {
+  padding: 15px;
+}
+
+.statistics-component .recharts-surface {
+  margin: 0 auto;
+}
+
+.recharts-tooltip-label {
+  font-weight: bold;
+}
+
+.recharts-legend-item {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .statistics-component {
+    padding: 10px;
+  }
+
+  .stat-card {
+    padding: 10px;
+  }
+
+  .stat-card .card-title {
+    font-size: 1rem;
+  }
+
+  .stat-card .card-body {
+    padding: 10px;
+  }
+}
